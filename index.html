@@ -92,9 +92,10 @@ button {
 </div>
 
 <script>
-// ---------- STATE ----------
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfj3z1TuTx1GhU_CNO0rMSuROaNVx5c7fGhwebd-Znv7b8dbFMuioHFl8yB1PkLwZheQ/exec";
+// ---------- CONFIG ----------
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxueyEwovdm7hcVa3BWhzQw8_ZH4NZHerUqEzeido13sPDUtRN1kqK9r3nM-89aP7XBog/exec"; // replace with your Apps Script URL
 
+// ---------- STATE ----------
 let customerInfo = {};
 let cart = [];
 
@@ -116,12 +117,11 @@ function goToInfo() {
 }
 
 function goHome() {
-  // Hide all pages except home
   infoPage.classList.add("hidden");
   searchPage.classList.add("hidden");
   homePage.classList.remove("hidden");
 
-  // Clear all form fields and cart
+  // Clear all fields
   customerNameInput.value = "";
   customerNumberInput.value = "";
   employeeNameInput.value = "";
@@ -142,10 +142,8 @@ function proceed() {
     return;
   }
 
-  // Store customer info
   customerInfo = { name, number, employee };
 
-  // Move to search page
   infoPage.classList.add("hidden");
   searchPage.classList.remove("hidden");
 }
@@ -163,30 +161,26 @@ async function searchBarcode() {
 
     resultsDiv.innerHTML = "";
 
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
       resultsDiv.innerHTML = "<em>No items found for this barcode.</em>";
       return;
     }
 
-    resultsDiv.innerHTML = ""; // clear previous results
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "result";
 
-	data.forEach(item => {
-  	// Create container for each result
-  	const div = document.createElement("div");
- 	div.className = "result";
-  	div.innerHTML = `<strong>${item}</strong>`; // just show item name
+      div.innerHTML = `<strong>${item.name}</strong> (Barcode: ${item.barcode})`;
 
-  	// Create the "Add Sample" button
-  	const btn = document.createElement("button");
-  	btn.textContent = "Add Sample";
-  	btn.className = "primary";
+      const btn = document.createElement("button");
+      btn.textContent = "Add Sample";
+      btn.className = "primary";
 
-  	// Attach event listener safely
-  	btn.addEventListener("click", () => addToCart(item));
+      btn.addEventListener("click", () => addToCart(item));
 
-  	div.appendChild(btn);
-  	resultsDiv.appendChild(div);
-	});
+      div.appendChild(btn);
+      resultsDiv.appendChild(div);
+    });
 
   } catch (err) {
     resultsDiv.innerHTML = "<em>Error searching barcode.</em>";
@@ -196,29 +190,28 @@ async function searchBarcode() {
 
 // ---------- CART ----------
 function addToCart(item) {
-  if (!cart.includes(item)) {
-    // Inside search result click handler
-	cart.push({ barcode: result.barcode, name: result.name });
-	renderCart();
-
+  if (!cart.some(i => i.barcode === item.barcode && i.name === item.name)) {
+    cart.push({ barcode: item.barcode, name: item.name });
+    renderCart();
   }
-  // Clear search
+
   barcodeInput.value = "";
   resultsDiv.innerHTML = "";
 }
 
-function removeFromCart(item) {
-  cart = cart.filter(i => i !== item);
+function removeFromCart(itemIndex) {
+  cart.splice(itemIndex, 1);
   renderCart();
 }
 
 function renderCart() {
   cartDiv.innerHTML = "";
-  cart.forEach(item => {
+  cart.forEach((item, index) => {
     const div = document.createElement("div");
     div.className = "cart-item";
     div.innerHTML = `
-      ${item} <span class="remove" onclick="removeFromCart('${item}')">✕</span>
+      ${item.name} (Barcode: ${item.barcode})
+      <span class="remove" onclick="removeFromCart(${index})">✕</span>
     `;
     cartDiv.appendChild(div);
   });
@@ -231,14 +224,13 @@ async function signOut() {
     return;
   }
 
-  // Collect customer info
-  const customerInfo = {
-    name: document.getElementById("customerName").value.trim(),
-    number: document.getElementById("customerNumber").value.trim(),
-    employee: document.getElementById("employeeName").value.trim()
+  const customerInfoData = {
+    name: customerNameInput.value.trim(),
+    number: customerNumberInput.value.trim(),
+    employee: employeeNameInput.value.trim()
   };
 
-  if (!customerInfo.name || !customerInfo.number || !customerInfo.employee) {
+  if (!customerInfoData.name || !customerInfoData.number || !customerInfoData.employee) {
     alert("Please fill in all customer information before signing out.");
     return;
   }
@@ -249,21 +241,22 @@ async function signOut() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "signout",
-        customerInfo,
-        items: cart.map(item => ({ barcode: item.barcode, name: item.name }))
+        customerInfo: customerInfoData,
+        items: cart
       })
     });
 
     alert("Samples signed out successfully!");
 
-    // Clear cart and inputs for next customer
+    // Reset
     cart = [];
-    renderCart(); // if you have a function to display the cart
-    document.getElementById("customerName").value = "";
-    document.getElementById("customerNumber").value = "";
-    document.getElementById("employeeName").value = "";
-    document.getElementById("barcodeInput").value = "";
-    document.getElementById("resultsDiv").innerHTML = "";
+    renderCart();
+    customerNameInput.value = "";
+    customerNumberInput.value = "";
+    employeeNameInput.value = "";
+    barcodeInput.value = "";
+    resultsDiv.innerHTML = "";
+
   } catch (err) {
     console.error(err);
     alert("Error signing out samples.");
