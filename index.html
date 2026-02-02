@@ -141,7 +141,207 @@
 
     function goHome() {
       signOutPage.classList.add("hidden");
-      homePage.classList.remove("hidden");
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Sign Out</title>
+
+<style>
+  * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+  body { margin: 0; background: #f5f5f5; display: flex; justify-content: center; }
+  .container { width: 100%; max-width: 420px; background: #fff; padding: 20px; min-height: 100vh; }
+  h1 { text-align: center; }
+
+  .hidden { display: none; }
+
+  input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+  button {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .primary { background: #007bff; color: #fff; }
+  .secondary { background: #ddd; }
+  .danger { background: #dc3545; color: #fff; }
+
+  .result, .cart-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+  }
+
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .remove {
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- HOME -->
+<div id="homePage">
+  <h1>Sample Management</h1>
+  <button class="primary" onclick="goToInfo()">Sign Samples Out</button>
+  <button class="secondary" disabled>Check In Samples</button>
+</div>
+
+<!-- INFO -->
+<div id="infoPage" class="hidden">
+  <h1>Customer Info</h1>
+
+  <input id="customerName" placeholder="Customer Name">
+  <input id="customerNumber" placeholder="Customer Number">
+  <input id="employeeName" placeholder="Employee Name">
+
+  <button class="primary" onclick="proceed()">Proceed</button>
+  <button class="secondary" onclick="goHome()">Back</button>
+</div>
+
+<!-- SEARCH -->
+<div id="searchPage" class="hidden">
+  <h1>Search Samples</h1>
+
+  <input id="barcodeInput" placeholder="Enter Barcode">
+  <button class="primary" onclick="searchBarcode()">Search</button>
+
+  <div id="results"></div>
+
+  <h3>Cart</h3>
+  <div id="cart"></div>
+
+  <button class="primary" onclick="signOut()">Sign Out</button>
+  <button class="secondary" onclick="goHome()">Home</button>
+</div>
+
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDc12CMYOYCPBwtIt0gT0Ph-2jvGmdM8xt22P8i53QkCdQu6Qm8vWAY8Cu0YINDimp/exec";
+
+let customerInfo = {};
+let cart = [];
+
+// NAVIGATION
+function goToInfo() {
+  homePage.classList.add("hidden");
+  infoPage.classList.remove("hidden");
+}
+
+function goHome() {
+  location.reload();
+}
+
+// PROCEED
+function proceed() {
+  customerInfo = {
+    name: customerName.value,
+    number: customerNumber.value,
+    employee: employeeName.value
+  };
+
+  if (!customerInfo.name || !customerInfo.number || !customerInfo.employee) {
+    alert("Fill all fields");
+    return;
+  }
+
+  infoPage.classList.add("hidden");
+  searchPage.classList.remove("hidden");
+}
+
+// SEARCH
+async function searchBarcode() {
+  const barcode = barcodeInput.value;
+  if (!barcode) return;
+
+  results.innerHTML = "Searching...";
+
+  const res = await fetch(`${SCRIPT_URL}?action=search&barcode=${barcode}`);
+  const data = await res.json();
+
+  results.innerHTML = "";
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `
+      <strong>${item}</strong>
+      <button onclick="addToCart('${item}')">Add Sample</button>
+    `;
+    results.appendChild(div);
+  });
+}
+
+// CART
+function addToCart(item) {
+  if (cart.includes(item)) return;
+  cart.push(item);
+  renderCart();
+  results.innerHTML = "";
+  barcodeInput.value = "";
+}
+
+function removeFromCart(item) {
+  cart = cart.filter(i => i !== item);
+  renderCart();
+}
+
+function renderCart() {
+  cartDiv = document.getElementById("cart");
+  cartDiv.innerHTML = "";
+
+  cart.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      ${item}
+      <span class="remove" onclick="removeFromCart('${item}')">✕</span>
+    `;
+    cartDiv.appendChild(div);
+  });
+}
+
+// SIGN OUT
+async function signOut() {
+  if (cart.length === 0) {
+    alert("Cart is empty");
+    return;
+  }
+
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "signout",
+      customerInfo,
+      items: cart
+    })
+  });
+
+  alert("Samples signed out");
+  location.reload();
+}
+</script>
+</body>
+</html>
+     homePage.classList.remove("hidden");
 
       // Clear form fields when going home
       document.getElementById("customerName").value = "";
