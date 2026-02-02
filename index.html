@@ -224,23 +224,44 @@ function renderCart() {
 
 // ---------- SIGN OUT ----------
 async function signOut() {
-  if (cart.length === 0) {
+  if (!cart.length) {
     alert("Cart is empty.");
+    return;
+  }
+
+  // Collect customer info
+  const customerInfo = {
+    name: document.getElementById("customerName").value.trim(),
+    number: document.getElementById("customerNumber").value.trim(),
+    employee: document.getElementById("employeeName").value.trim()
+  };
+
+  if (!customerInfo.name || !customerInfo.number || !customerInfo.employee) {
+    alert("Please fill in all customer information before signing out.");
     return;
   }
 
   try {
     await fetch(SCRIPT_URL, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "signout",
         customerInfo,
-        items: cart
+        items: cart.map(item => ({ barcode: item.barcode, name: item.name }))
       })
     });
 
     alert("Samples signed out successfully!");
-    goHome();
+
+    // Clear cart and inputs for next customer
+    cart = [];
+    renderCart(); // if you have a function to display the cart
+    document.getElementById("customerName").value = "";
+    document.getElementById("customerNumber").value = "";
+    document.getElementById("employeeName").value = "";
+    document.getElementById("barcodeInput").value = "";
+    document.getElementById("resultsDiv").innerHTML = "";
   } catch (err) {
     console.error(err);
     alert("Error signing out samples.");
