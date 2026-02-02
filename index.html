@@ -1,210 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sample Sign Out</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 420px;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .primary {
-      background-color: #007bff;
-      color: #fff;
-    }
-
-    .secondary {
-      background-color: #e0e0e0;
-      color: #333;
-    }
-
-    .disabled {
-      background-color: #cccccc;
-      color: #666;
-      cursor: not-allowed;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-
-    <!-- HOME PAGE -->
-    <div id="homePage">
-      <h1>Sample Management</h1>
-
-      <button class="primary" onclick="goToSignOut()">
-        Sign Samples Out
-      </button>
-
-      <button class="secondary disabled">
-        Check In Samples (Coming Soon)
-      </button>
-    </div>
-
-    <!-- SIGN OUT INFO PAGE -->
-    <div id="signOutPage" class="hidden">
-      <h1>Sign Samples Out</h1>
-
-      <div class="form-group">
-        <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" />
-      </div>
-
-      <div class="form-group">
-        <label for="customerNumber">Customer Number</label>
-        <input type="text" id="customerNumber" />
-      </div>
-
-      <div class="form-group">
-        <label for="employeeName">Employee Name</label>
-        <input type="text" id="employeeName" />
-      </div>
-
-      <button class="primary">
-        Proceed
-      </button>
-
-      <button class="secondary" onclick="goHome()">
-        Back to Home
-      </button>
-    </div>
-
-  </div>
-
-  <script>
-    const homePage = document.getElementById("homePage");
-    const signOutPage = document.getElementById("signOutPage");
-
-    function goToSignOut() {
-      homePage.classList.add("hidden");
-      signOutPage.classList.remove("hidden");
-    }
-
-    function goHome() {
-      signOutPage.classList.add("hidden");
- <!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sample Sign Out</title>
 
 <style>
-  * { box-sizing: border-box; font-family: system-ui, sans-serif; }
-  body { margin: 0; background: #f5f5f5; display: flex; justify-content: center; }
-  .container { width: 100%; max-width: 420px; background: #fff; padding: 20px; min-height: 100vh; }
-  h1 { text-align: center; }
+* { box-sizing: border-box; font-family: system-ui, sans-serif; }
+body { margin: 0; background: #f5f5f5; display: flex; justify-content: center; }
+.container { width: 100%; max-width: 420px; background: #fff; padding: 20px; min-height: 100vh; }
+h1 { text-align: center; }
 
-  .hidden { display: none; }
+.hidden { display: none; }
 
-  input, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    font-size: 16px;
-  }
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
 
-  button {
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+button {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-  .primary { background: #007bff; color: #fff; }
-  .secondary { background: #ddd; }
-  .danger { background: #dc3545; color: #fff; }
+.primary { background: #007bff; color: #fff; }
+.secondary { background: #ddd; }
+.danger { background: #dc3545; color: #fff; }
 
-  .result, .cart-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 6px;
-  }
+.result, .cart-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+}
 
-  .cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .remove {
-    color: red;
-    cursor: pointer;
-    font-weight: bold;
-  }
+.remove {
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- HOME -->
+<!-- HOME PAGE -->
 <div id="homePage">
   <h1>Sample Management</h1>
   <button class="primary" onclick="goToInfo()">Sign Samples Out</button>
   <button class="secondary" disabled>Check In Samples</button>
 </div>
 
-<!-- INFO -->
+<!-- CUSTOMER INFO PAGE -->
 <div id="infoPage" class="hidden">
   <h1>Customer Info</h1>
 
@@ -216,7 +73,7 @@
   <button class="secondary" onclick="goHome()">Back</button>
 </div>
 
-<!-- SEARCH -->
+<!-- SEARCH & CART PAGE -->
 <div id="searchPage" class="hidden">
   <h1>Search Samples</h1>
 
@@ -235,68 +92,106 @@
 </div>
 
 <script>
+// ---------- STATE ----------
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDc12CMYOYCPBwtIt0gT0Ph-2jvGmdM8xt22P8i53QkCdQu6Qm8vWAY8Cu0YINDimp/exec";
 
 let customerInfo = {};
 let cart = [];
 
-// NAVIGATION
+// ---------- ELEMENTS ----------
+const homePage = document.getElementById("homePage");
+const infoPage = document.getElementById("infoPage");
+const searchPage = document.getElementById("searchPage");
+const resultsDiv = document.getElementById("results");
+const cartDiv = document.getElementById("cart");
+const customerNameInput = document.getElementById("customerName");
+const customerNumberInput = document.getElementById("customerNumber");
+const employeeNameInput = document.getElementById("employeeName");
+const barcodeInput = document.getElementById("barcodeInput");
+
+// ---------- NAVIGATION ----------
 function goToInfo() {
   homePage.classList.add("hidden");
   infoPage.classList.remove("hidden");
 }
 
 function goHome() {
-  location.reload();
+  // Hide all pages except home
+  infoPage.classList.add("hidden");
+  searchPage.classList.add("hidden");
+  homePage.classList.remove("hidden");
+
+  // Clear all form fields and cart
+  customerNameInput.value = "";
+  customerNumberInput.value = "";
+  employeeNameInput.value = "";
+  barcodeInput.value = "";
+  resultsDiv.innerHTML = "";
+  cart = [];
+  renderCart();
 }
 
-// PROCEED
+// ---------- PROCEED ----------
 function proceed() {
-  customerInfo = {
-    name: customerName.value,
-    number: customerNumber.value,
-    employee: employeeName.value
-  };
+  const name = customerNameInput.value.trim();
+  const number = customerNumberInput.value.trim();
+  const employee = employeeNameInput.value.trim();
 
-  if (!customerInfo.name || !customerInfo.number || !customerInfo.employee) {
-    alert("Fill all fields");
+  if (!name || !number || !employee) {
+    alert("Please fill all fields.");
     return;
   }
 
+  // Store customer info
+  customerInfo = { name, number, employee };
+
+  // Move to search page
   infoPage.classList.add("hidden");
   searchPage.classList.remove("hidden");
 }
 
-// SEARCH
+// ---------- SEARCH ----------
 async function searchBarcode() {
-  const barcode = barcodeInput.value;
+  const barcode = barcodeInput.value.trim();
   if (!barcode) return;
 
-  results.innerHTML = "Searching...";
+  resultsDiv.innerHTML = "Searching...";
 
-  const res = await fetch(`${SCRIPT_URL}?action=search&barcode=${barcode}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=search&barcode=${barcode}`);
+    const data = await res.json();
 
-  results.innerHTML = "";
+    resultsDiv.innerHTML = "";
 
-  data.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "result";
-    div.innerHTML = `
-      <strong>${item}</strong>
-      <button onclick="addToCart('${item}')">Add Sample</button>
-    `;
-    results.appendChild(div);
-  });
+    if (data.length === 0) {
+      resultsDiv.innerHTML = "<em>No items found for this barcode.</em>";
+      return;
+    }
+
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `
+        <strong>${item}</strong>
+        <button onclick="addToCart('${item}')">Add Sample</button>
+      `;
+      resultsDiv.appendChild(div);
+    });
+  } catch (err) {
+    resultsDiv.innerHTML = "<em>Error searching barcode.</em>";
+    console.error(err);
+  }
 }
 
-// CART
+// ---------- CART ----------
 function addToCart(item) {
-  if (cart.includes(item)) return;
-  cart.push(item);
-  renderCart();
-  results.innerHTML = "";
+  if (!cart.includes(item)) {
+    cart.push(item);
+    renderCart();
+  }
+  // Clear search
   barcodeInput.value = "";
+  resultsDiv.innerHTML = "";
 }
 
 function removeFromCart(item) {
@@ -305,50 +200,41 @@ function removeFromCart(item) {
 }
 
 function renderCart() {
-  cartDiv = document.getElementById("cart");
   cartDiv.innerHTML = "";
-
   cart.forEach(item => {
     const div = document.createElement("div");
     div.className = "cart-item";
     div.innerHTML = `
-      ${item}
-      <span class="remove" onclick="removeFromCart('${item}')">✕</span>
+      ${item} <span class="remove" onclick="removeFromCart('${item}')">✕</span>
     `;
     cartDiv.appendChild(div);
   });
 }
 
-// SIGN OUT
+// ---------- SIGN OUT ----------
 async function signOut() {
   if (cart.length === 0) {
-    alert("Cart is empty");
+    alert("Cart is empty.");
     return;
   }
 
-  await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "signout",
-      customerInfo,
-      items: cart
-    })
-  });
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "signout",
+        customerInfo,
+        items: cart
+      })
+    });
 
-  alert("Samples signed out");
-  location.reload();
+    alert("Samples signed out successfully!");
+    goHome();
+  } catch (err) {
+    console.error(err);
+    alert("Error signing out samples.");
+  }
 }
 </script>
-</body>
-</html>
-     homePage.classList.remove("hidden");
-
-      // Clear form fields when going home
-      document.getElementById("customerName").value = "";
-      document.getElementById("customerNumber").value = "";
-      document.getElementById("employeeName").value = "";
-    }
-  </script>
-
 </body>
 </html>
