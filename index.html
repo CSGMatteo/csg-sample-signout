@@ -93,7 +93,7 @@ button {
 
 <script>
 // ---------- CONFIG ----------
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQWDHKIzocSrYfwUX1Iq1vHGWDFLGCstizmGipKOwTJlR6PHUT6ej-qg0ihLCRATJ3HA/exec"; // replace with your Apps Script URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8fu8qTS-TG0yFsig2lCTjB8Tker0dQlFMxZh2UgLvyr40lOexR73YHPgUcy6pgbh6eQ/exec"; // replace with your Apps Script URL
 
 // ---------- STATE ----------
 let customerInfo = {};
@@ -224,39 +224,32 @@ async function signOut() {
     return;
   }
 
-  const customerInfoData = {
-    name: customerNameInput.value.trim(),
-    number: customerNumberInput.value.trim(),
-    employee: employeeNameInput.value.trim()
+  // SAFE defaults
+  const payload = {
+    action: "signout",
+    customerName: customerNameInput.value?.trim() || "",
+    customerNumber: customerNumberInput.value?.trim() || "",
+    employeeName: employeeNameInput.value?.trim() || "",
+    items: cart.map(item => ({
+      barcode: item.barcode || "",
+      name: item.name || ""
+    }))
   };
 
-  if (!customerInfoData.name || !customerInfoData.number || !customerInfoData.employee) {
-    alert("Please fill in all customer information before signing out.");
-    return;
-  }
-
   try {
-    await fetch(SCRIPT_URL, {
+    const res = await fetch(SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "signout",
-        customerInfo: customerInfoData,
-        items: cart
-      })
+      body: JSON.stringify(payload)
     });
 
-    alert("Samples signed out successfully!");
+    const text = await res.text();
+    console.log("Server response:", text);
 
-    // Reset
+    alert("Samples signed out!");
+
     cart = [];
     renderCart();
-    customerNameInput.value = "";
-    customerNumberInput.value = "";
-    employeeNameInput.value = "";
-    barcodeInput.value = "";
-    resultsDiv.innerHTML = "";
-
   } catch (err) {
     console.error(err);
     alert("Error signing out samples.");
