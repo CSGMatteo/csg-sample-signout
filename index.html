@@ -168,15 +168,26 @@ async function searchBarcode() {
       return;
     }
 
-    data.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "result";
-      div.innerHTML = `
-        <strong>${item}</strong>
-        <button onclick="addToCart('${item}')">Add Sample</button>
-      `;
-      resultsDiv.appendChild(div);
-    });
+    resultsDiv.innerHTML = ""; // clear previous results
+
+	data.forEach(item => {
+  	// Create container for each result
+  	const div = document.createElement("div");
+ 	div.className = "result";
+  	div.innerHTML = `<strong>${item}</strong>`; // just show item name
+
+  	// Create the "Add Sample" button
+  	const btn = document.createElement("button");
+  	btn.textContent = "Add Sample";
+  	btn.className = "primary";
+
+  	// Attach event listener safely
+  	btn.addEventListener("click", () => addToCart(item));
+
+  	div.appendChild(btn);
+  	resultsDiv.appendChild(div);
+	});
+
   } catch (err) {
     resultsDiv.innerHTML = "<em>Error searching barcode.</em>";
     console.error(err);
