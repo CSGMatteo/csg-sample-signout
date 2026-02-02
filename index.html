@@ -197,8 +197,10 @@ async function searchBarcode() {
 // ---------- CART ----------
 function addToCart(item) {
   if (!cart.includes(item)) {
-    cart.push(item);
-    renderCart();
+    // Inside search result click handler
+	cart.push({ barcode: result.barcode, name: result.name });
+	renderCart();
+
   }
   // Clear search
   barcodeInput.value = "";
