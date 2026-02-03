@@ -29,18 +29,13 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
+    .hidden {
+      display: none;
+    }
+
     h1 {
       text-align: center;
       margin-bottom: 24px;
-    }
-
-    p {
-      text-align: center;
-      color: #555;
-    }
-
-    .hidden {
-      display: none;
     }
 
     button {
@@ -63,20 +58,9 @@
       color: #333;
     }
 
-    .disabled {
-      background-color: #cccccc;
-      color: #666;
-      cursor: not-allowed;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
+    .black {
+      background: #000;
+      color: #fff;
     }
 
     input {
@@ -85,109 +69,114 @@
       font-size: 16px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: #222;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- HOME PAGE -->
-    <div id="homePage">
-      <h1>Sample Management</h1>
-
-      <button class="primary" onclick="goToSignOut()">
-        Sign Samples Out
-      </button>
-
-      <button class="secondary disabled">
-        Check In Samples (Coming Soon)
-      </button>
-    </div>
-
-    <!-- SIGN OUT INFO PAGE -->
-    <div id="signOutPage" class="hidden">
-      <h1>Sign Samples Out</h1>
-
-      <div class="form-group">
-        <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" />
-      </div>
-
-      <div class="form-group">
-        <label for="customerNumber">Customer Number</label>
-        <input type="text" id="customerNumber" />
-      </div>
-
-      <div class="form-group">
-        <label for="employeeName">Employee Name</label>
-        <input type="text" id="employeeName" />
-      </div>
-
-      <button class="primary" onclick="proceed()">
-        Proceed
-      </button>
-
-      <button class="secondary" onclick="goHome()">
-        Back to Home
-      </button>
-    </div>
-
-    <!-- NEXT (BLANK) PAGE -->
-    <div id="nextPage" class="hidden">
-      <h1>Next Step</h1>
-
-      <p>
-        Scanner or manual entry will go here later.
-      </p>
-
-      <button class="secondary" onclick="goHome()">
-        Home
-      </button>
-    </div>
-
+  <!-- HOME PAGE -->
+  <div id="homePage">
+    <h1>Sample Management</h1>
+    <button class="primary" onclick="goToCustomer()">Sign Samples Out</button>
   </div>
 
-  <script>
-    const homePage = document.getElementById("homePage");
-    const signOutPage = document.getElementById("signOutPage");
-    const nextPage = document.getElementById("nextPage");
+  <!-- CUSTOMER INFO PAGE -->
+  <div id="customerPage" class="hidden">
+    <h1>Customer Info</h1>
 
-    const customerName = document.getElementById("customerName");
-    const customerNumber = document.getElementById("customerNumber");
-    const employeeName = document.getElementById("employeeName");
+    <input id="customerName" placeholder="Customer Name" />
+    <input id="customerNumber" placeholder="Customer Number" />
+    <input id="employeeName" placeholder="Employee Name" />
 
-    function goToSignOut() {
-      homePage.classList.add("hidden");
-      signOutPage.classList.remove("hidden");
-    }
+    <button class="primary" onclick="goToSearch()">Proceed</button>
+    <button class="secondary" onclick="goHome()">Home</button>
+  </div>
 
-    function goHome() {
-      signOutPage.classList.add("hidden");
-      nextPage.classList.add("hidden");
-      homePage.classList.remove("hidden");
+  <!-- SEARCH PAGE -->
+  <div id="searchPage" class="hidden black">
+    <h1>Manual Code Search</h1>
 
-      // Clear form fields
-      customerName.value = "";
-      customerNumber.value = "";
-      employeeName.value = "";
-    }
+    <input id="barcodeInput" placeholder="Enter barcode" />
+    <button class="primary" onclick="search()">Search</button>
 
-    function proceed() {
-      const name = customerName.value.trim();
-      const number = customerNumber.value.trim();
-      const employee = employeeName.value.trim();
+    <div id="results"></div>
 
-      if (!name || !number || !employee) {
-        alert("Please fill in all fields before proceeding.");
-        return;
-      }
+    <h3>Cart</h3>
+    <div id="cart"></div>
 
-      // Move to next page
-      signOutPage.classList.add("hidden");
-      nextPage.classList.remove("hidden");
-    }
-  </script>
+    <button class="secondary" onclick="goHome()">Home</button>
+  </div>
+
+</div>
+
+<script>
+  const homePage = document.getElementById("homePage");
+  const customerPage = document.getElementById("customerPage");
+  const searchPage = document.getElementById("searchPage");
+
+  let cart = [];
+
+  function goHome() {
+    homePage.classList.remove("hidden");
+    customerPage.classList.add("hidden");
+    searchPage.classList.add("hidden");
+  }
+
+  function goToCustomer() {
+    homePage.classList.add("hidden");
+    customerPage.classList.remove("hidden");
+  }
+
+  function goToSearch() {
+    customerPage.classList.add("hidden");
+    searchPage.classList.remove("hidden");
+  }
+
+  async function search() {
+    const code = document.getElementById("barcodeInput").value;
+    const res = await fetch(`YOUR_SCRIPT_URL?barcode=${code}`);
+    const data = await res.json();
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    data.results.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        ${item.barcode} - ${item.item}
+        <button onclick='addToCart("${item.barcode}", "${item.item}")'>Add</button>
+      `;
+      resultsDiv.appendChild(div);
+    });
+  }
+
+  function addToCart(barcode, item) {
+    cart.push({ barcode, item });
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartDiv = document.getElementById("cart");
+    cartDiv.innerHTML = "";
+    cart.forEach(i => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.textContent = `${i.barcode} - ${i.item}`;
+      cartDiv.appendChild(div);
+    });
+  }
+</script>
 
 </body>
 </html>
