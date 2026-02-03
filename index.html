@@ -1,182 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sample Sign Out</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Sign Out</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+<style>
+  * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+  body { margin: 0; background: #f5f5f5; display: flex; justify-content: center; }
+  .container { width: 100%; max-width: 420px; background: #fff; padding: 20px; min-height: 100vh; }
+  h1 { text-align: center; }
 
-    body {
-      margin: 0;
-      background: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  .hidden { display: none; }
 
-    .container {
-      width: 100%;
-      max-width: 420px;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
+  input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
 
-    .hidden {
-      display: none;
-    }
+  button {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+  .primary { background: #007bff; color: #fff; }
+  .secondary { background: #ddd; }
+  .danger { background: #dc3545; color: #fff; }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
+  .result, .cart-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+  }
 
-    .primary {
-      background-color: #007bff;
-      color: #fff;
-    }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .secondary {
-      background-color: #e0e0e0;
-      color: #333;
-    }
-
-    .black {
-      background: #000;
-      color: #fff;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 12px;
-    }
-
-    .card {
-      background: #222;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 8px;
-    }
-  </style>
+  .remove {
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
 </head>
-<body>
 
+<body>
 <div class="container">
 
-  <!-- HOME PAGE -->
-  <div id="homePage">
-    <h1>Sample Management</h1>
-    <button class="primary" onclick="goToCustomer()">Sign Samples Out</button>
-  </div>
+<!-- HOME -->
+<div id="homePage">
+  <h1>Sample Management</h1>
+  <button class="primary" onclick="goToInfo()">Sign Samples Out</button>
+  <button class="secondary" disabled>Check In Samples</button>
+</div>
 
-  <!-- CUSTOMER INFO PAGE -->
-  <div id="customerPage" class="hidden">
-    <h1>Customer Info</h1>
+<!-- INFO -->
+<div id="infoPage" class="hidden">
+  <h1>Customer Info</h1>
 
-    <input id="customerName" placeholder="Customer Name" />
-    <input id="customerNumber" placeholder="Customer Number" />
-    <input id="employeeName" placeholder="Employee Name" />
+  <input id="customerName" placeholder="Customer Name">
+  <input id="customerNumber" placeholder="Customer Number">
+  <input id="employeeName" placeholder="Employee Name">
 
-    <button class="primary" onclick="goToSearch()">Proceed</button>
-    <button class="secondary" onclick="goHome()">Home</button>
-  </div>
+  <button class="primary" onclick="proceed()">Proceed</button>
+  <button class="secondary" onclick="goHome()">Back</button>
+</div>
 
-  <!-- SEARCH PAGE -->
-  <div id="searchPage" class="hidden black">
-    <h1>Manual Code Search</h1>
+<!-- SEARCH -->
+<div id="searchPage" class="hidden">
+  <h1>Search Samples</h1>
 
-    <input id="barcodeInput" placeholder="Enter barcode" />
-    <button class="primary" onclick="search()">Search</button>
+  <input id="barcodeInput" placeholder="Enter Barcode">
+  <button class="primary" onclick="searchBarcode()">Search</button>
 
-    <div id="results"></div>
+  <div id="results"></div>
 
-    <h3>Cart</h3>
-    <div id="cart"></div>
+  <h3>Cart</h3>
+  <div id="cart"></div>
 
-    <button class="secondary" onclick="goHome()">Home</button>
-  </div>
+  <button class="primary" onclick="signOut()">Sign Out</button>
+  <button class="secondary" onclick="goHome()">Home</button>
+</div>
 
 </div>
 
 <script>
-  const homePage = document.getElementById("homePage");
-  const customerPage = document.getElementById("customerPage");
-  const searchPage = document.getElementById("searchPage");
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0TDGnCmPYOvxA43kci0EziqW8h5xSarcdXNKg3ZUOxJNbs0SVl1JFyRu42Vctj4mFxA/exec";
 
-  let cart = [];
+let customerInfo = {};
+let cart = [];
 
-  function goHome() {
-    homePage.classList.remove("hidden");
-    customerPage.classList.add("hidden");
-    searchPage.classList.add("hidden");
+// NAVIGATION
+function goToInfo() {
+  homePage.classList.add("hidden");
+  infoPage.classList.remove("hidden");
+}
+
+function goHome() {
+  location.reload();
+}
+
+// PROCEED
+function proceed() {
+  customerInfo = {
+    name: customerName.value,
+    number: customerNumber.value,
+    employee: employeeName.value
+  };
+
+  if (!customerInfo.name || !customerInfo.number || !customerInfo.employee) {
+    alert("Fill all fields");
+    return;
   }
 
-  function goToCustomer() {
-    homePage.classList.add("hidden");
-    customerPage.classList.remove("hidden");
+  infoPage.classList.add("hidden");
+  searchPage.classList.remove("hidden");
+}
+
+// SEARCH
+async function searchBarcode() {
+  const barcode = barcodeInput.value;
+  if (!barcode) return;
+
+  results.innerHTML = "Searching...";
+
+  const res = await fetch(`${SCRIPT_URL}?action=search&barcode=${barcode}`);
+  const data = await res.json();
+
+  results.innerHTML = "";
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "result";
+
+    const label = document.createElement("strong");
+    label.textContent = item;
+
+    const btn = document.createElement("button");
+    btn.textContent = "Add Sample";
+    btn.onclick = () => addToCart(item);
+
+    div.appendChild(label);
+    div.appendChild(btn);
+    results.appendChild(div);
+  });
+}
+
+// CART
+function addToCart(item) {
+  if (cart.includes(item)) return;
+  cart.push(item);
+  renderCart();
+  results.innerHTML = "";
+  barcodeInput.value = "";
+}
+
+function removeFromCart(item) {
+  cart = cart.filter(i => i !== item);
+  renderCart();
+}
+
+function renderCart() {
+  const cartDiv = document.getElementById("cart");
+  cartDiv.innerHTML = "";
+
+  cart.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "cart-item";
+
+    const text = document.createElement("span");
+    text.textContent = item;
+
+    const remove = document.createElement("span");
+    remove.className = "remove";
+    remove.textContent = "✕";
+    remove.onclick = () => removeFromCart(item);
+
+    div.appendChild(text);
+    div.appendChild(remove);
+    cartDiv.appendChild(div);
+  });
+}
+
+// SIGN OUT
+function signOut() {
+  if (cart.length === 0) {
+    alert("Cart is empty");
+    return;
   }
 
-  function goToSearch() {
-    customerPage.classList.add("hidden");
-    searchPage.classList.remove("hidden");
-  }
+  // Send the request (fire-and-forget)
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "signout",
+      customerInfo,
+      items: cart
+    })
+  }).catch(err => {
+    console.warn("Request failed, but samples may still be signed out.", err);
+  });
 
-  async function search() {
-    const code = document.getElementById("barcodeInput").value;
-    const res = await fetch(`YOUR_SCRIPT_URL?barcode=${code}`);
-    const data = await res.json();
-
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-
-    data.results.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        ${item.barcode} - ${item.item}
-        <button onclick='addToCart("${item.barcode}", "${item.item}")'>Add</button>
-      `;
-      resultsDiv.appendChild(div);
-    });
-  }
-
-  function addToCart(barcode, item) {
-    cart.push({ barcode, item });
-    renderCart();
-  }
-
-  function renderCart() {
-    const cartDiv = document.getElementById("cart");
-    cartDiv.innerHTML = "";
-    cart.forEach(i => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.textContent = `${i.barcode} - ${i.item}`;
-      cartDiv.appendChild(div);
-    });
-  }
+  // Immediately show confirmation and return to home
+  alert("Samples Successfully Signed Out");
+  goHome(); // returns to Home page
+}
 </script>
-
 </body>
 </html>
