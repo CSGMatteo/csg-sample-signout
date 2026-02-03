@@ -34,6 +34,11 @@
       margin-bottom: 24px;
     }
 
+    p {
+      text-align: center;
+      color: #555;
+    }
+
     .hidden {
       display: none;
     }
@@ -128,11 +133,25 @@
       </button>
     </div>
 
+    <!-- NEXT (BLANK) PAGE -->
+    <div id="nextPage" class="hidden">
+      <h1>Next Step</h1>
+
+      <p>
+        Scanner or manual entry will go here later.
+      </p>
+
+      <button class="secondary" onclick="goHome()">
+        Home
+      </button>
+    </div>
+
   </div>
 
   <script>
     const homePage = document.getElementById("homePage");
     const signOutPage = document.getElementById("signOutPage");
+    const nextPage = document.getElementById("nextPage");
 
     const customerName = document.getElementById("customerName");
     const customerNumber = document.getElementById("customerNumber");
@@ -145,9 +164,10 @@
 
     function goHome() {
       signOutPage.classList.add("hidden");
+      nextPage.classList.add("hidden");
       homePage.classList.remove("hidden");
 
-      // Clear form fields when going home
+      // Clear form fields
       customerName.value = "";
       customerNumber.value = "";
       employeeName.value = "";
@@ -163,7 +183,9 @@
         return;
       }
 
-      alert("Next step will be added later.");
+      // Move to next page
+      signOutPage.classList.add("hidden");
+      nextPage.classList.remove("hidden");
     }
   </script>
 
